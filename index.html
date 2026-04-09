@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vocabulary Quiz App - Liquid Glass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Segoe+UI&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-DNfCJB3N.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BmGE6Dch.css">
+</head>
+<body>
+  <!-- BACKGROUND GRADIENT BLOBS -->
+  <div class="blob-bg blob-pink"></div>
+  <div class="blob-bg blob-purple"></div>
+  <div class="blob-bg blob-cyan"></div>
+
+  <!-- AUTHENTICATION (LOGIN) UI -->
+  <div id="login-container" class="glass-panel login-panel">
+    <div class="login-header">
+      <h1 class="gradient-text" data-i18n="app.title">Vocabulary Master</h1>
+      <p data-i18n="login.subtitle">Vui lòng đăng nhập để sử dụng ứng dụng</p>
+    </div>
+
+    <!-- Cảnh báo hết phiên dùng thử -->
+    <div id="trial-ended-alert" class="alert-box error hidden" data-i18n="login.trial_ended">
+      Phiên bản trải nghiệm đã kết thúc. Vui lòng đăng nhập để tiếp tục.
+    </div>
+
+    <!-- Thông báo lỗi đăng nhập -->
+    <div id="login-error" class="alert-box error hidden" data-i18n="login.error">
+      Tài khoản hoặc mật khẩu không chính xác.
+    </div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username" data-i18n="login.username">Tài khoản</label>
+        <input type="text" id="username" class="neon-input" data-i18n-placeholder="login.username.ph" placeholder="Nhập tên đăng nhập" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="password" data-i18n="login.password">Mật khẩu</label>
+        <div style="position: relative;">
+          <input type="password" id="password" class="neon-input" data-i18n-placeholder="login.password.ph" placeholder="Nhập mật khẩu" autocomplete="current-password" style="width: 100%; padding-right: 40px; box-sizing: border-box;">
+          <span id="toggle-password" style="position: absolute; right: 12px; top: 12px; cursor: pointer; user-select: none; color: #a9b0c0; display: flex; align-items: center; justify-content: center; height: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </span>
+        </div>
+      </div>
+      
+      <button type="submit" class="neon-pink-btn fill-width" data-i18n="login.submit">ĐĂNG NHẬP</button>
+    </form>
+
+    <div class="login-divider"><span data-i18n="login.or">hoặc</span></div>
+    
+    <button id="btn-try-free" class="neon-cyan-btn fill-width btn-try" data-i18n="login.try_free">
+      Trải nghiệm 10 phút miễn phí
+    </button>
+  </div>
+
+  <!-- MAIN APP UI (HIDDEN BY DEFAULT) -->
+  <div id="app-container" class="hidden">
+    <!-- TIMER OVERLAY FOR TRIAL -->
+    <div id="trial-timer-hud" class="trial-timer hidden">
+      <span data-i18n="trial.time_left">Thời gian thử:</span> <span id="trial-time-left">10:00</span>
+    </div>
+
+    <header class="glass-panel main-header">
+      <div class="header-content">
+        <div class="app-title">
+          <h1 class="gradient-text" data-i18n="app.title">Vocabulary Master</h1>
+          <p data-i18n="app.subtitle">App học từ vựng tiếng Nhật chuyên ngành xây dựng.</p>
+        </div>
+        <div class="header-tabs">
+          <button class="tab-btn active" data-target="study-tab" data-i18n="nav.study">📖 Chế độ học tập</button>
+          <button class="tab-btn" data-target="review-tab" data-i18n="nav.review">📝 Ôn tập</button>
+          <button class="tab-btn" data-target="test-tab" data-i18n="nav.test">🎯 Chế độ Test</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- LOADING OVERLAY -->
+      <div id="global-loading" class="global-loading">
+        <div class="spinner"></div>
+        <p data-i18n="loading.data">Đang nạp dữ liệu từ Excel...</p>
+      </div>
+
+      <!-- STUDY TAB -->
+      <section id="study-tab" class="tab-content active">
+        <div class="split-layout">
+          <div class="left-pane glass-panel">
+            <div class="progress-bar-container">
+              <span class="progress-label" data-i18n="study.progress">Tiến độ:</span>
+              <input type="number" id="study-index-input" class="neon-input short-input" value="1" min="1">
+              <span id="study-total-label" class="progress-total">/ 0</span>
+              <div class="spacer"></div>
+              <span class="hint-text" data-i18n="study.hint_save">Lưu vị trí câu đang học.</span>
+              <button id="btn-save-study" class="neon-cyan-btn small-btn" data-i18n="study.btn_save">Save</button>
+            </div>
+
+            <div class="question-card">
+              <p id="study-question-text" data-i18n="study.loading">Đang tải câu hỏi...</p>
+            </div>
+
+            <div class="section-label" data-i18n="study.answer_label">ĐÁP ÁN</div>
+            <textarea id="study-answer-text" class="neon-input answer-box" readonly>...</textarea>
+
+            <div class="action-buttons">
+              <button id="btn-study-random" class="neon-pink-btn flex-btn" data-i18n="btn.random">Ngẫu nhiên</button>
+              <button id="btn-study-prev" class="neon-cyan-btn flex-btn" data-i18n="btn.prev">← CÂU TRƯỚC</button>
+              <button id="btn-study-next" class="neon-cyan-btn flex-btn" data-i18n="btn.next">CÂU TIẾP →</button>
+            </div>
+            
+            <p id="study-feedback" class="feedback-text"></p>
+          </div>
+          
+          <div class="right-pane glass-panel img-pane">
+            <img id="study-image" src="" alt="Minh họa" class="hidden">
+            <p id="study-no-img" class="no-img-text" data-i18n="no_img">Không có ảnh minh hoạ</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- REVIEW TAB -->
+      <section id="review-tab" class="tab-content">
+        <div class="split-layout">
+          <div class="left-pane glass-panel">
+            <div class="progress-bar-container">
+              <span class="progress-label" id="review-progress-text" data-i18n="review.progress">Tiến độ: 0/0</span>
+              <div class="spacer"></div>
+              <span class="hint-text" data-i18n="review.hint_section">NỘI DUNG THUYẾT MINH • Ôn tập từ câu</span>
+              <input type="number" id="review-start-input" class="neon-input short-input" value="1" min="1">
+              <span class="hint-text" data-i18n="review.hint_to">đến câu</span>
+              <input type="number" id="review-end-input" class="neon-input short-input" value="1" min="1">
+            </div>
+
+            <div class="question-card">
+              <p id="review-question-text">...</p>
+            </div>
+
+            <div class="section-label" data-i18n="review.label_input">TỰ NHẬP ĐÁP ÁN</div>
+            <textarea id="review-answer-input" class="neon-input editable-box" data-i18n-placeholder="review.input.ph" placeholder="Gõ đáp án của bạn vào đây..."></textarea>
+
+            <div class="action-buttons tight-wrap">
+              <button id="btn-review-check" class="neon-pink-btn flex-btn" data-i18n="review.btn_check">KIỂM TRA</button>
+              <button id="btn-review-show" class="neon-cyan-btn flex-btn" data-i18n="review.btn_show">Hiện đáp án</button>
+              <button id="btn-review-random" class="neon-cyan-btn flex-btn" data-i18n="btn.random">Ngẫu nhiên</button>
+              <button id="btn-review-prev" class="neon-cyan-btn flex-btn" data-i18n="btn.prev_short">← TRƯỚC</button>
+              <button id="btn-review-next" class="neon-cyan-btn flex-btn" data-i18n="btn.next_short">TIẾP →</button>
+            </div>
+            
+            <p id="review-feedback" class="feedback-text"></p>
+            <p id="review-real-answer" class="feedback-text bold hidden">Đáp án: ...</p>
+          </div>
+          
+          <div class="right-pane glass-panel img-pane">
+            <img id="review-image" src="" alt="Minh họa" class="hidden">
+            <p id="review-no-img" class="no-img-text" data-i18n="no_img">Không có ảnh minh hoạ</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEST TAB -->
+      <section id="test-tab" class="tab-content">
+        <div class="glass-panel test-config-panel">
+          <button id="btn-test-start" class="neon-pink-btn" data-i18n="test.btn_start">BẮT ĐẦU TEST</button>
+          <button id="btn-test-restart" class="neon-cyan-btn" data-i18n="test.btn_restart">Làm lại từ đầu</button>
+          
+          <span class="hint-text margin-l" data-i18n="test.hint_from">Test từ câu</span>
+          <input type="number" id="test-start-input" class="neon-input short-input" value="1" min="1">
+          <span class="hint-text" data-i18n="test.hint_to">đến câu</span>
+          <input type="number" id="test-end-input" class="neon-input short-input" value="1" min="1">
+          
+          <span class="hint-text margin-l" data-i18n="test.hint_total">Tổng số câu test</span>
+          <input type="number" id="test-count-input" class="neon-input short-input" value="20" min="1">
+          <span class="hint-text" data-i18n="test.hint_cau">câu</span>
+
+          <div class="spacer"></div>
+          <span id="test-status-text" class="status-text" data-i18n="test.status.none">Trạng thái: Chưa bắt đầu</span>
+        </div>
+
+        <div class="split-layout test-workspace hidden" id="test-workspace">
+          <div class="left-pane glass-panel">
+            <h2 id="test-question-text" class="question-header">...</h2>
+            <div class="section-label" data-i18n="test.label_choose">CHỌN 1 ĐÁP ÁN ĐÚNG:</div>
+            
+            <div class="radio-group" id="test-options-container">
+              <!-- Options rendered dynamically -->
+            </div>
+
+            <div class="action-buttons">
+              <button id="btn-test-confirm" class="neon-pink-btn flex-btn" data-i18n="test.btn_confirm">XÁC NHẬN</button>
+              <button id="btn-test-next" class="neon-cyan-btn flex-btn" data-i18n="test.btn_next">CÂU TIẾP THEO ➔</button>
+            </div>
+
+            <p id="test-live-stats" class="live-stats">Tổng số: 0 | Sai: 0 | Đúng: 0</p>
+            
+            <div id="test-navigation-grid" class="nav-grid">
+              <!-- Indicators dynamically created -->
+            </div>
+
+            <p id="test-result-feedback" class="feedback-text"></p>
+          </div>
+
+          <div class="right-pane flex-col">
+            <div class="glass-panel img-pane flex-1">
+              <img id="test-image" src="" alt="Minh họa" class="hidden">
+              <p id="test-no-img" class="no-img-text" data-i18n="test.no_img">Không có ảnh cho câu này</p>
+            </div>
+
+            <div id="test-summary-panel" class="glass-panel hidden mg-t">
+              <p id="test-summary-text" class="summary-text" style="white-space: pre-line;">...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer" data-i18n="footer.desc">
+      System is running with local portable memory cache (Web version).
+    </footer>
+  </div>
+
+</body>
+</html>
